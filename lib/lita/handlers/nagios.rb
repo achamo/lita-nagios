@@ -1,13 +1,16 @@
 require 'lita'
 require 'securerandom'
 require 'json'
-
 module Lita
   module Handlers
     class Nagios < Handler
 
       def self.default_config(config)
-        config.enabled = true
+        config.room = nil
+        config.nagios_url = nil
+        config.user = nil
+        config.password = nil
+        config.redis_namespace = nil
       end
 
       @@silent = false
@@ -114,4 +117,3 @@ module Lita
   end
 end
  
-Lita.config.handlers.nagios.enabled
