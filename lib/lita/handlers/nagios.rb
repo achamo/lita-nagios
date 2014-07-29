@@ -82,6 +82,7 @@ module Lita
         data = Rack::Utils.parse_query(params)
         dest = Source.new(room: Lita.config.handlers.nagios.room)
         uid = genuid
+        return if data['state'] == 'WARNING'
         if data.has_key?('type')
           case data['type']
           when 'host'
@@ -90,7 +91,7 @@ module Lita
             state = data['state']
             output = data['output']
             cache_alert uid, { type: 'host', host: host }.to_json
-            robot.send_message(dest, "ALERT on #{host} (#{state}) -- #{notificationtype}, result: #{output} -- #{uid}")
+            robot.send_message(dest, "#{state} #{notificationtype}: #{host} result: #{output} -- #{uid}")
           when 'service'
             host = data['host']
             notificationtype = data['notificationtype']
@@ -98,7 +99,7 @@ module Lita
             state = data['state']
             output = data['output']
             cache_alert uid, { type: 'service', host: host, service: service }.to_json
-            robot.send_message(dest, "ALERT on #{host} (#{state}) -- #{notificationtype}, #{service}, result: #{output} -- #{uid}")
+            robot.send_message(dest, "#{state} #{notificationtype}: #{host} - #{service}, result: #{output} -- #{uid}")
           end
         else
           response.status = 400
